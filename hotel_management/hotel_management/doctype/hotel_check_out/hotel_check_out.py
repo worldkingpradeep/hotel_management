@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 # Copyright (c) 2020, Havenir and contributors
 # For license information, please see license.txt
@@ -13,7 +14,7 @@ class HotelCheckOut(Document):
         if room_doc.room_status != 'Checked In' and room_doc.check_in_id == self.check_in_id:
             frappe.throw('Room Status is not Checked In')
 
-    def on_submit(self):
+    def on_save(self):
         room_doc = frappe.get_doc('Rooms',self.room)
         room_doc.db_set('room_status','Available')
         room_doc.db_set('check_in_id',None)
@@ -59,7 +60,7 @@ class HotelCheckOut(Document):
             payment_doc.guest_name = self.guest_name
             payment_doc.contact_no = self.contact_no
             payment_doc.save()
-            payment_doc.submit()
+            
         
         if self.amount_paid == 0 and self.refund > 0:
             hotel_refund_entry = frappe.new_doc('Hotel Payment Entry')
@@ -245,7 +246,7 @@ def create_sales_invoice(self, all_checked_out):
                 'income_account': default_income_account
             })
         sales_invoice_doc.insert(ignore_permissions=True)
-        sales_invoice_doc.submit()
+        sales_invoice_doc.save()
     if all_checked_out == 1 or self.customer != 'Hotel Walk In Customer': 
         create_walk_in_invoice = 0
         for item in self.items:
@@ -318,7 +319,7 @@ def create_sales_invoice(self, all_checked_out):
                 })
 
             sales_invoice_doc.insert(ignore_permissions=True)
-            sales_invoice_doc.submit()
+            sales_invoice_doc.save()
 
             # Creating Additional Payment Vouchers
             if self.total_pos_charges - self.total_payments > 0:
@@ -330,7 +331,7 @@ def create_sales_invoice(self, all_checked_out):
                 payment_doc.guest_name = self.guest_name
                 payment_doc.contact_no = self.contact_no
                 payment_doc.save()
-                payment_doc.submit()
+                
 
         
         # Getting list of check_out with same check in id and is not Hotel Walk In Customer
@@ -389,4 +390,4 @@ def create_sales_invoice(self, all_checked_out):
                 if self.food_discount != 0 and exclude_discount == 0:
                     sales_invoice_doc.discount_amount += self.food_discount
             sales_invoice_doc.insert(ignore_permissions=True)
-            sales_invoice_doc.submit()
+            sales_invoice_doc.save()
