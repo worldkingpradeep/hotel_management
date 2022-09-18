@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 # Copyright (c) 2020, Havenir and contributors
 # For license information, please see license.txt
@@ -14,7 +13,7 @@ class HotelCheckOut(Document):
         if room_doc.room_status != 'Checked In' and room_doc.check_in_id == self.check_in_id:
             frappe.throw('Room Status is not Checked In')
 
-    def on_save(self):
+    def on_submit(self):
         room_doc = frappe.get_doc('Rooms',self.room)
         room_doc.db_set('room_status','Available')
         room_doc.db_set('check_in_id',None)
@@ -59,8 +58,8 @@ class HotelCheckOut(Document):
             payment_doc.check_in_id = self.check_in_id
             payment_doc.guest_name = self.guest_name
             payment_doc.contact_no = self.contact_no
-            payment_doc.save()
-            
+            # payment_doc.save()
+            # payment_doc.submit()
         
         if self.amount_paid == 0 and self.refund > 0:
             hotel_refund_entry = frappe.new_doc('Hotel Payment Entry')
@@ -72,8 +71,8 @@ class HotelCheckOut(Document):
             hotel_refund_entry.guest_id = self.guest_id
             hotel_refund_entry.check_in_id = self.check_in_id
             hotel_refund_entry.guest_name = self.guest_name
-            hotel_refund_entry.save()
-            hotel_refund_entry.submit()
+            # hotel_refund_entry.save()
+            # hotel_refund_entry.submit()
 
 
 
@@ -330,8 +329,7 @@ def create_sales_invoice(self, all_checked_out):
                 payment_doc.check_in_id = self.check_in_id
                 payment_doc.guest_name = self.guest_name
                 payment_doc.contact_no = self.contact_no
-                payment_doc.save()
-                
+             
 
         
         # Getting list of check_out with same check in id and is not Hotel Walk In Customer
